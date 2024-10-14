@@ -10,9 +10,9 @@ Note: Crazymagicians assumes no responsibility for any consequences arising from
 
 ## Features
 
-- Does hunts, adventures, training, work commands, farming, daily, weekly, heal and random events
+- Does hunts, adventures, training, work commands, farming, daily, weekly, heal and rseponds to random events
 
-- Runs completly in the background without requiring to open the discord window/tab
+- runs in the background without needing to open the Discord window or tab.
 
 - Alerts you during epic guard(captcha) events
 
@@ -35,7 +35,7 @@ py -3 -m pip install -U discord.py-self
 ```
 
 * Complete `options.ini`
-replace the text withing [] (including '[' and ']') with the appropriate options. Make sure there is no space in either sides of '='
+replace the text withing [] (including '[' and ']') with the appropriate options. Make sure there is no space in either sides of '=' and you don't remove the <@> from `user_mention_text` in `options.ini`
 
 for example : [carrot or potato or bread or none] -----> carrot
 
