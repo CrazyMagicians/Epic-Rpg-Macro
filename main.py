@@ -110,13 +110,13 @@ async def responseResolver(message):
             if not paused:
                 paused = True
             else:
-                highPriorityQueue.append("worker is already paused")
+                print("worker is already paused")
             return
         elif "sb start" == msg:
             if paused:
                 paused = False
             else:
-                highPriorityQueue.append("worker is already running")
+                print("worker is already running")
             return
 
     elif message.author.id == 1213487623688167494: #navi lite user id
@@ -320,10 +320,10 @@ class DiscordClient(discord.Client):
                     lowPriorityQueue.append("rpg rd")
                     print(time.strftime("%H:%M:%S rpg rd done"))
     
-                if randomIntervals:
-                    await asyncio.sleep(1+randint(0,3))
-                else:
-                    await asyncio.sleep(1)
+            if randomIntervals:
+                await asyncio.sleep(1+randint(0,3))
+            else:
+                await asyncio.sleep(1)
 
 UserBot = DiscordClient()
 UserBot.run(userToken)
