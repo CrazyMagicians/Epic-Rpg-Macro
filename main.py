@@ -22,6 +22,7 @@ randomIntervals = userOptions["random_interval"] == "true"
 lowPriorityQueue = []
 highPriorityQueue = []
 jailed = False
+paused = False
 sessionData = {"command_data":{"hunt":0,"adventure":0,"farm":0,"training":0,"work":0,"quest":0},"stats_data":{"coins":0,"xp":0,"levels":0},"loot_data":{"mob_drops":{"wolf skin":0,"zombie eye":0,"unicorn horn":0,"mermaid hair":0,"chip":0,"dragon scale":0},"lootbox_drops":{"common":0,"uncommon":0,"rare":0,"epic":0,"edgy":0,"omega":0,"godly":0},"work_drops":{"banana":0,"apple":0,"ruby":0,"normie fish":0,"golden fish":0,"epic fish":0,"wooden log":0,"epic log":0,"super log":0,"mega log":0,"hyper log":0,"ultra log":0},"farm_drops":{"carrot":0,"potato":0,"bread":0}},"misc":{"cards":0,"guard_events":0,"personal_events":0}}
 
 #extra functionality
@@ -90,17 +91,33 @@ async def rdCheck(msg):
             lowPriorityQueue.append("rpg "+userOptions["work_command"])
 
 async def responseResolver(message):
-    global lowPriorityQueue,highPriorityQueue,sessionData,jailed,userToken,userID,userMentionText,channelID,userOptions,runtimeErrors,userSeedFinished,alertBox,rdCheck
+    global lowPriorityQueue,highPriorityQueue,sessionData,jailed,paused,userToken,userID,userMentionText,channelID,userOptions,runtimeErrors,userSeedFinished,alertBox,rdCheck
     msg = message.content.lower()
     if message.author.id == userID:
-        if "sb session" in msg:
+        if "sb session t" == msg:
             lowPriorityQueue.append("```"+pprint.pformat(sessionData)+"```")
-        elif "sb stats t" in msg:
+            return
+        elif "sb session" == msg:
             print(pprint.pformat(sessionData))
-        elif "sb uptime t" in msg:
-            print(time.time()-startTime)
-        elif "sb uptime" in msg:
-            lowPriorityQueue.append(str(time.time()-startTime)+" seconds")
+            return
+        elif "sb uptime t" == msg:
+            highPriorityQueue.append(str(time.time()-startTime)+" seconds")
+            return
+        elif "sb uptime" == msg:
+            print(str(time.time()-startTime)+" seconds")
+            return
+        elif "sb pause" == msg:
+            if not paused:
+                paused = True
+            else:
+                highPriorityQueue.append("worker is already paused")
+            return
+        elif "sb start" == msg:
+            if paused:
+                paused = False
+            else:
+                highPriorityQueue.append("worker is already running")
+            return
 
     elif message.author.id == 1213487623688167494: #navi lite user id
         if userMentionText in msg:
@@ -281,31 +298,32 @@ class DiscordClient(discord.Client):
             await responseResolver(message)
     
     async def my_background_task(self):
-        global jailed,lowPriorityQueue,highPriorityQueue
+        global jailed,lowPriorityQueue,highPriorityQueue,paused
         lastCheck = int(time.time()) - 300
         await self.wait_until_ready()
         channel = self.get_channel(channelID)
 
         while not self.is_closed():
-            if len(highPriorityQueue) != 0 and not jailed:
-                if highPriorityQueue[0] != "":
-                    await channel.send(highPriorityQueue[0])
-                print(time.strftime("%H:%M:%S "+highPriorityQueue[0]+" done"))
-                del highPriorityQueue[0]
-            elif len(lowPriorityQueue) != 0 and not jailed:
-                await channel.send(lowPriorityQueue[0])
-                print(time.strftime("%H:%M:%S "+lowPriorityQueue[0]+" done"))
-                del lowPriorityQueue[0]
-            
-            if int(time.time()) - lastCheck >= 300 and not jailed:
-                lastCheck = int(time.time())
-                lowPriorityQueue.append("rpg rd")
-                print(time.strftime("%H:%M:%S rpg rd done"))
-
-            if randomIntervals:
-                await asyncio.sleep(1+randint(0,3))
-            else:
-                await asyncio.sleep(1)
+            if not paused:
+                if len(highPriorityQueue) != 0 and not jailed:
+                    if highPriorityQueue[0] != "":
+                        await channel.send(highPriorityQueue[0])
+                    print(time.strftime("%H:%M:%S "+highPriorityQueue[0]+" done"))
+                    del highPriorityQueue[0]
+                elif len(lowPriorityQueue) != 0 and not jailed:
+                    await channel.send(lowPriorityQueue[0])
+                    print(time.strftime("%H:%M:%S "+lowPriorityQueue[0]+" done"))
+                    del lowPriorityQueue[0]
+                
+                if int(time.time()) - lastCheck >= 300 and not jailed:
+                    lastCheck = int(time.time())
+                    lowPriorityQueue.append("rpg rd")
+                    print(time.strftime("%H:%M:%S rpg rd done"))
+    
+                if randomIntervals:
+                    await asyncio.sleep(1+randint(0,3))
+                else:
+                    await asyncio.sleep(1)
 
 UserBot = DiscordClient()
 UserBot.run(userToken)
