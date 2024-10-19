@@ -261,6 +261,9 @@ async def responseResolver(message):
                         sessionData["loot_data"]["lootbox_drops"][lootbox] += 1
                 if "card" in msg:
                     sessionData["misc"]["cards"] += 1
+            elif "fine, i will let you go" in msg:
+                jailed = False
+                jailAttempts = 0
             elif "seed in the ground" in msg:
                 for item in sessionData["loot_data"]["farm_drops"]:
                     if item in msg:
