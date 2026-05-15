@@ -1,8 +1,8 @@
 import discord #main module
 import asyncio #for bot developement
 import time #time related functions
-#PAID version /import numpy #captcha image data reading
-#PAID version /import cv2 #captcha
+#import numpy #captcha image data reading
+#import cv2 #captcha
 import pprint #for session data viewing
 import captcha_bypasser #PAID version /bypassing epic guard
 import options_resolver #user options parser
